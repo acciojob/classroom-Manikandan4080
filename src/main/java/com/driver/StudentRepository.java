@@ -10,17 +10,14 @@ import java.util.Map;
 @Repository
 public class StudentRepository{
     Map<String, Student> studentMap = new HashMap<>();
-    List<String> students = new ArrayList<>();
     Map<String, Teacher> teacherMap = new HashMap<>();
     Map<String, List<String>> teacherStudentMap = new HashMap<>();
     public void addStudent(Student student) {
         studentMap.put(student.getName(), student);
-        students.add(student.getName());
     }
 
     public void addTeacher(Teacher teacher) {
         teacherMap.put(teacher.getName(), teacher);
-        //teacherList.add(teacher);
     }
 
     public void addStudentTeacherPair(String student, String teacher) {
@@ -55,18 +52,21 @@ public class StudentRepository{
     }
 
     public List<String> getAllStudents() {
-        return students;
+        return new ArrayList<>(studentMap.keySet());
     }
 
     public void deleteTeacherByName(String teacher) {
-        if(teacherMap.containsKey(teacher)){
-            teacherMap.remove(teacher);
-            teacherStudentMap.remove(teacher);
+        teacherMap.remove(teacher);
+        List<String> students = teacherStudentMap.get(teacher);
+        teacherStudentMap.remove(teacher);
+        for(String student : students){
+            studentMap.remove(student);
         }
     }
 
     public void deleteAllTeachers() {
-        teacherMap.clear();
-        teacherStudentMap.clear();
+        for(String teacher : teacherMap.keySet()){
+            deleteTeacherByName(teacher);
+        }
     }
 }
